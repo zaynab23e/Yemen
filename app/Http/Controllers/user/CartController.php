@@ -29,44 +29,42 @@ class CartController extends Controller
             'total' => $cartItems->sum(fn($item) => $item->quantity * $item->price),
         ]);
     }
+public function store(Request $request)
+{
+    $user = Auth::user();
+    
+   
+    $request->validate([
+        'item_id' => 'required|exists:items,id',
+        'quantity' => 'required|integer|min:1',
+    ]);
 
-    public function store(Request $request)
-    {
-        $user = Auth::user();
-        $request->validate([
-            'item_id' => 'required|exists:items,id',
-            'quantity' => 'required|integer|min:1',
+    $item = Item::findOrFail($request->item_id);
+    $cart = Cart::firstOrCreate(['user_id' => $user->id]);
+
+    $cartItem = CartItem::where('cart_id', $cart->id)
+        ->where('item_id', $request->item_id)
+        ->first();
+
+    if ($cartItem) {
+        $cartItem->update([
+            'quantity' => $cartItem->quantity + $request->quantity,
         ]);
-
-        $item = Item::findOrFail($request->item_id);
-        $cart = Cart::where('user_id', $user->id)->where('status', 'pending')->first();
-
-        if (!$cart) {
-            $cart = Cart::create(['user_id' => $user->id]);
-        }
-
-        $cartItem = CartItem::where('cart_id', $cart->id)
-            ->where('item_id', $request->item_id)
-            ->first();
-
-        if ($cartItem) {
-            $cartItem->update([
-                'quantity' => $cartItem->quantity + $request->quantity,
-            ]);
-        } else {
-            $cartItem = CartItem::create([
-                'cart_id' => $cart->id,
-                'item_id' => $request->item_id,
-                'quantity' => $request->quantity,
-                'price' => $item->price,
-            ]);
-        }
-
-        return response()->json([
-            'message' => 'تم إضافة المنتج إلى السلة',
-            'cart_item' => $cartItem
+    } else {
+        $cartItem = CartItem::create([
+            'cart_id' => $cart->id,
+            'item_id' => $request->item_id,
+            'quantity' => $request->quantity,
+            'price' => $item->price,
         ]);
     }
+
+    return response()->json([
+        'message' => 'تم إضافة المنتج إلى السلة',
+        'cart_item' => $cartItem
+    ]);
+}
+
 
     public function update(Request $request, $itemId)
     {
