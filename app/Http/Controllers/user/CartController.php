@@ -73,7 +73,7 @@ class CartController extends Controller
         $request->validate(['quantity' => 'required|integer|min:1']);
 
         $user = Auth::user();
-        $cart = Cart::where('user_id', $user->id)->where('status', 'pending')->first();
+        $cart = Cart::where('user_id', $user->id)->first();
 
         if (!$cart) {
             return response()->json(['message' => 'السلة فارغة'], 404);
