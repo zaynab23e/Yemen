@@ -7,47 +7,42 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Cart;
 use App\Models\CartItem;
-use App\Models\Product;
+use App\Models\item;
 
 
 class CartController extends Controller
 {
-     
     public function index()
     {
         $user = Auth::user();
-        $cart = Cart::where('user_id', $user->id)->first();
+        $cart = $user->cart()->first();
 
         if (!$cart) {
             return response()->json(['message' => 'السلة فارغة']);
         }
 
-        $cartItems = CartItem::where('cart_id', $cart->id)->with('product')->get();
+        $cartItems = CartItem::where('cart_id', $cart->id)->with('item')->get();
 
         return response()->json([
             'cart' => $cartItems,
-            'total' => $cartItems->sum('total_price')
+            'total' => $cartItems->sum(fn($item) => $item->quantity * $item->price),
         ]);
     }
-
-    
     public function store(Request $request)
     {
         $user = Auth::user();
+        
+    
         $request->validate([
-            'product_id' => 'required|exists:products,id',
+            'item_id' => 'required|exists:items,id',
             'quantity' => 'required|integer|min:1',
         ]);
 
-        // $product = Product::findOrFail($request->product_id);
-        $cart = Cart::where('user_id', $user->id)->where('status', 'pending')->first();
-
-        if (!$cart) {
-            $cart = Cart::create(['user_id' => $user->id]);
-        }
+        $item = Item::findOrFail($request->item_id);
+        $cart = Cart::firstOrCreate(['user_id' => $user->id]);
 
         $cartItem = CartItem::where('cart_id', $cart->id)
-            ->where('product_id', $request->product_id)
+            ->where('item_id', $request->item_id)
             ->first();
 
         if ($cartItem) {
@@ -57,9 +52,9 @@ class CartController extends Controller
         } else {
             $cartItem = CartItem::create([
                 'cart_id' => $cart->id,
-                'product_id' => $request->product_id,
+                'item_id' => $request->item_id,
                 'quantity' => $request->quantity,
-                // 'price' => $product->price,
+                'price' => $item->price,
             ]);
         }
 
@@ -68,85 +63,54 @@ class CartController extends Controller
             'cart_item' => $cartItem
         ]);
     }
-    
-    
-    
-    public function update(Request $request, $productId)
-{
-    $request->validate(['quantity' => 'required|integer|min:1']);
 
-    $user = Auth::user();
-    $cart = Cart::where('user_id', $user->id)->where('status', 'pending')->first();
 
-    if (!$cart) {
-        return response()->json(['message' => 'السلة فارغة'], 404);
+    public function update(Request $request, $itemId)
+    {
+        $request->validate(['quantity' => 'required|integer|min:1']);
+
+        $user = Auth::user();
+        $cart = Cart::where('user_id', $user->id)->first();
+
+        if (!$cart) {
+            return response()->json(['message' => 'السلة فارغة'], 404);
+        }
+
+        $cartItem = CartItem::where('cart_id', $cart->id)
+            ->where('item_id', $itemId)
+            ->first();
+
+        if (!$cartItem) {
+            return response()->json(['message' => 'العنصر غير موجود في السلة'], 404);
+        }
+
+        $cartItem->update(['quantity' => $request->quantity]);
+
+        return response()->json(['message' => 'تم تحديث الكمية بنجاح']);
     }
 
-    $cartItem = CartItem::where('cart_id', $cart->id)
-                        ->where('product_id', $productId)
-                        ->first();
+    public function destroy($itemId)
+    {
+        $user = Auth::user();
+        $cart = Cart::where('user_id', $user->id)->first();
 
-    if (!$cartItem) {
-        return response()->json(['message' => 'العنصر غير موجود في السلة'], 404);
+        if (!$cart) {
+            return response()->json(['message' => 'السلة فارغة'], 404);
+        }
+
+        $cartItem = CartItem::where('cart_id', $cart->id)
+            ->where('item_id', $itemId)
+            ->first();
+
+        if (!$cartItem) {
+            return response()->json(['message' => 'العنصر غير موجود في السلة'], 404);
+        }
+
+        $cartItem->delete();
+
+        return response()->json(['message' => 'تم حذف المنتج من السلة']);
     }
 
-    $cartItem->update(['quantity' => $request->quantity]);
-
-    return response()->json(['message' => 'تم تحديث الكمية بنجاح']);
-}
-
-
-
-    //   public function update(Request $request, $cartItemId)
-    // {
-    //     $request->validate(['quantity' => 'required|integer|min:1']);
-    
-    //     $cartItem = CartItem::find($cartItemId);
-    
-    //     if (!$cartItem) {
-    //         return response()->json(['message' => 'العنصر غير موجود في السلة'], 404);
-    //     }
-    
-    //     $cartItem->update(['quantity' => $request->quantity]);
-    
-    //     return response()->json(['message' => 'تم تحديث الكمية بنجاح']);
-    // }
-    
-
-      
-    // public function destroy($cartItemId)
-    // {
-    //     $cartItem = CartItem::findOrFail($cartItemId);
-    //     $cartItem->delete();
-
-    //     return response()->json(['message' => 'تم حذف المنتج من السلة']);
-    // }
-    
- 
-  
-public function destroy($productId)
-{
-    $user = Auth::user();
-    $cart = Cart::where('user_id', $user->id)->first();
-
-    if (!$cart) {
-        return response()->json(['message' => 'السلة فارغة'], 404);
-    }
-
-    $cartItem = CartItem::where('cart_id', $cart->id)
-                        ->where('product_id', $productId)
-                        ->first();
-
-    if (!$cartItem) {
-        return response()->json(['message' => 'العنصر غير موجود في السلة'], 404);
-    }
-
-    $cartItem->delete();
-
-    return response()->json(['message' => 'تم حذف المنتج من السلة']);
-}
-
-  
     public function clearCart()
     {
         $user = Auth::user();
@@ -159,5 +123,4 @@ public function destroy($productId)
         return response()->json(['message' => 'تم مسح محتويات السلة']);
     }
 }
-
 

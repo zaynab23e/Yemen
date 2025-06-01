@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('contact_us', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->nullable();
-            $table->string('email')->nullable();
-            $table->text('message')->nullable();
-            $table->timestamps();
+        Schema::table('order_items', function (Blueprint $table) {
+            $table->decimal('total_price', 10, 2);
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('contact_us');
+        Schema::table('order_items', function (Blueprint $table) {
+            $table->dropColumn('total_price');
+        });
     }
 };
