@@ -1,24 +1,26 @@
 <?php
 
 namespace App\Providers;
+
 use App\Interfaces\PaymentGatewayInterface;
 use App\Services\PaymobPaymentService;
-
-
 use Illuminate\Support\ServiceProvider;
 
-class AppServiceProvider extends ServiceProvider
+class PaymentServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * Register services.
      */
-    public function register(): void
-    {
+    public function register(): void {
+
+
         $this->app->bind(PaymentGatewayInterface::class, PaymobPaymentService::class);
+
+
     }
 
     /**
-     * Bootstrap any application services.
+     * Bootstrap services.
      */
     public function boot(): void
     {

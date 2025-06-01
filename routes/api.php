@@ -3,6 +3,9 @@
 use App\Http\Controllers\Admin\AdminsAuthController;
 use App\Http\Controllers\Admin\ItemsController;
 use App\Http\Controllers\Admin\MenusCategoryController;
+// use App\Http\Controllers\PaymentController;
+// use App\Http\Controllers\user\PaymentConrtoller;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -31,3 +34,15 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     Route::post('items/{id}/', [ItemsController::class, 'updateItem'])->name('items.uploadImage');
     Route::post('/logout', [AdminsAuthController::class, 'logout'])->name('admins.logout');
 });
+
+
+
+
+
+
+// Route::get('/user', function (Request $request) {
+//     return $request->user();
+// })->middleware('auth:sanctum');
+
+
+
