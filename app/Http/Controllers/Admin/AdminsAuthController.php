@@ -17,7 +17,7 @@ class AdminsAuthController extends Controller
     // Admin login
     public function login(LoginAdminRequest $request)
     {
-        $admin = Admin::where('email', $request->email)->first();
+        $admin = Admin::where('phone', $request->phone)->first();
     
         // Check if admin exists and verify password manually
         if (!$admin || !Hash::check($request->password, $admin->password)) {
