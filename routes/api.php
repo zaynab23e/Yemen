@@ -68,6 +68,9 @@ Route::middleware('auth:sanctum')->prefix('user')->group(function () {
     Route::post('/cart/{item_id}', [CartController::class, 'update']);
     Route::delete('/cart/{item_id}', [CartController::class, 'destroy']);
     // Route::delete('/cart', [CartController::class, 'clearCart']);
+    Route::apiResource('/menuCategories', MenusCategoryController::class)->only(['index', 'show']);
+
+    Route::apiResource('/items', ItemsController::class)->only(['index', 'show']);
 
     Route::post('/Orders/', [OrderController::class, 'placeOrder']);
     Route::get('/Orders/', [OrderController::class, 'index']);

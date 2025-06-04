@@ -24,8 +24,9 @@ class StoreUserRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required','confirmed',Password::default(),
+            'email' => 'nullable|string|email|max:255|unique:users',
+            'phone' => ['required', 'regex:/^\+?[0-9]{10,15}$/', 'unique:users,phone'],
+            'password' => ['required','confirmed',Password::default()],
         ];
     }
 }

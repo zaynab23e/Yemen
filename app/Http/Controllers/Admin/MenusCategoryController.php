@@ -24,13 +24,7 @@ class MenusCategoryController extends Controller
 
         return MenusCategoryResource::collection($categories);
     }
-    // public function create()
-    // {
-    //     $admin = Auth::guard('admin')->user();
 
-    //     // Logic to show the form for creating a new menu category
-    //     return view('DashBoard.MenusCategory.create', compact('admin'));
-    // }
     public function store(StoreMenusCategoryRequest $request)
     {
         // Store the menu category in the database
@@ -38,14 +32,7 @@ class MenusCategoryController extends Controller
 
         return new MenusCategoryResource($category);
     }
-    // public function edit($id)
-    // {
-    //     // Logic to show the form for editing a menu category
-    //     $menuCategory = MenuCategory::findOrFail($id);
-    //     $admin = Auth::guard('admin')->user();
 
-    //     return view('DashBoard.MenusCategory.edit', compact('menuCategory','admin'));
-    // }
     public function update(UpdateMenusCategoryRequest $request, $id)
     {
         // Logic to update a menu category

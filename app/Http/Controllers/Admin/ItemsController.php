@@ -23,14 +23,7 @@ class ItemsController extends Controller
 
         return ItemResource::collection($items);
     }
-    // public function create()
-    // {
-    //     $admin = Auth::guard('admin')->user();
-    //     $MenuCategories = MenuCategory::all();
 
-    //     // Logic to show the form for creating a new item
-    //     return view('DashBoard.Items.create', compact('admin', 'MenuCategories'));
-    // }
     public function store(StoreItemsRequest $request)
     {
         // dd($request->all());
@@ -60,15 +53,7 @@ class ItemsController extends Controller
 
         return new ItemResource($item);
     }
-    // public function edit($id)
-    // {
-    //     // Logic to show the form for editing a menu category
-    //     $item = Item::findOrFail($id);
-    //     $admin = Auth::guard('admin')->user();
-    //     $MenuCategories = MenuCategory::all();
 
-    //     return view('DashBoard.Items.edit', compact('item','admin','MenuCategories'));
-    // }
 public function update(UpdateItemsRequest $request, $id)
 {
     $item = Item::findOrFail($id);
