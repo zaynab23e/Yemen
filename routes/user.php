@@ -3,6 +3,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\user\AuthController;
 use App\Http\Controllers\user\CartController;
 use App\Http\Controllers\user\PaymentConrtoller;
+use App\Http\Controllers\user\OrderController;
+use App\Http\Controllers\user\PaymentController;
 
 
 
@@ -18,8 +20,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/cart/{item_id}', [CartController::class, 'update']);
     Route::delete('/cart/{item_id}', [CartController::class, 'destroy']);
     // Route::delete('/cart', [CartController::class, 'clearCart']);
+Route::post('/{user}/Orders/', [OrderController::class, 'placeOrder']);
+    Route::get('/Orders/', [OrderController::class, 'index']);
 
-Route::post('/payment/process', [PaymentConrtoller::class, 'paymentProcess']);
-Route::match(['GET','POST'],'/payment/callback', [PaymentConrtoller::class, 'callBack']);
+Route::post('/{user}/payment/process', [PaymentController::class, 'paymentProcess']);
+Route::match(['GET','POST'],'/payment/callback', [PaymentController::class, 'callBack']);
 
 });

@@ -16,7 +16,7 @@ class CartController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $cart = Cart::where('user_id', $user->id)->first();
+        $cart = $user->cart()->first();
 
         if (!$cart) {
             return response()->json(['message' => 'السلة فارغة']);
@@ -33,7 +33,6 @@ public function store(Request $request)
 {
     $user = Auth::user();
     
-   
     $request->validate([
         'item_id' => 'required|exists:items,id',
         'quantity' => 'required|integer|min:1',
@@ -124,5 +123,4 @@ public function store(Request $request)
         return response()->json(['message' => 'تم مسح محتويات السلة']);
     }
 }
-
 

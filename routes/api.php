@@ -1,10 +1,17 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\Admin\AdminsAuthController;
 use App\Http\Controllers\Admin\ItemsController;
 use App\Http\Controllers\Admin\MenusCategoryController;
+
 // use App\Http\Controllers\PaymentController;
 // use App\Http\Controllers\user\PaymentConrtoller;
+
+
+use App\Http\Controllers\user\CartController;
+use App\Http\Controllers\user\UsersAuthController;
+use App\Http\Controllers\user\OrderController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -32,8 +39,11 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     Route::apiResource('/menuCategories', MenusCategoryController::class);
     Route::apiResource('/items', ItemsController::class);
     Route::post('items/{id}/', [ItemsController::class, 'updateItem'])->name('items.uploadImage');
+    Route::get('/orders', [AdminOrderController::class, 'index'])->name('dashboard.orders');
+
     Route::post('/logout', [AdminsAuthController::class, 'logout'])->name('admins.logout');
 });
+
 
 
 
@@ -45,4 +55,23 @@ Route::middleware('admin')->prefix('admin')->group(function () {
 // })->middleware('auth:sanctum');
 
 
+
+
+Route::prefix('user')->group(function () {
+    Route::post('/register', [UsersAuthController::class, 'register'])->name('users.register');
+    Route::post('/login', [UsersAuthController::class, 'login'])->name('users.login');
+
+});
+Route::middleware('auth:sanctum')->prefix('user')->group(function () {
+    Route::get('/all-cart', [CartController::class, 'index']);
+    Route::post('/cart', [CartController::class, 'store']);
+    Route::post('/cart/{item_id}', [CartController::class, 'update']);
+    Route::delete('/cart/{item_id}', [CartController::class, 'destroy']);
+    // Route::delete('/cart', [CartController::class, 'clearCart']);
+
+    Route::post('/Orders/', [OrderController::class, 'placeOrder']);
+    Route::get('/Orders/', [OrderController::class, 'index']);
+    
+    Route::post('/logout', [UsersAuthController::class, 'logout'])->name('users.logout');
+});
 

@@ -4,9 +4,10 @@ namespace App\Http\Controllers\user;
 
 use App\Http\Controllers\Controller;
 use App\Interfaces\PaymentGatewayInterface;
+use App\Models\User;
 use Illuminate\Http\Request;
 
-class PaymentConrtoller extends Controller
+class PaymentController extends Controller
 {
     protected PaymentGatewayInterface $paymentGateway;
 
@@ -17,10 +18,10 @@ class PaymentConrtoller extends Controller
     }
 
 
-    public function paymentProcess(Request $request)
+    public function paymentProcess(User $user,Request $request)
     {
 
-        return $this->paymentGateway->sendPayment($request);
+        return $this->paymentGateway->sendPayment($user,$request);
     }
 
     public function callBack(Request $request): \Illuminate\Http\RedirectResponse
@@ -34,14 +35,15 @@ class PaymentConrtoller extends Controller
     }
 
 
+
     public function success()
     {
 
-        return view('payment-success');
+        return response()->json(['message' => 'Payment Done!']);
     }
     public function failed()
     {
 
-        return view('payment-failed');
+        return response()->json(['message' => 'Payment Failed!']);
     }
 }

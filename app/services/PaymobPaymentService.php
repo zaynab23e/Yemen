@@ -1,9 +1,11 @@
 <?php
 
+
 namespace App\Services;
 
 use App\Interfaces\PaymentGatewayInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class PaymobPaymentService extends BasePaymentService implements PaymentGatewayInterface
@@ -16,33 +18,44 @@ class PaymobPaymentService extends BasePaymentService implements PaymentGatewayI
 
     public function __construct()
     {
-        $this->base_url = env("BAYMOB_BASE_URL");
-        $this->api_key = env("BAYMOB_API_KEY");
+        $this->base_url = env("PAYMOB_BASE_URL");
+        $this->api_key = env("PAYMOB_API_KEY");
         $this->header = [
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
         ];
 
-        $this->integrations_id = [4900623, 4864845];
+        $this->integrations_id = [4952690, 4948887];
     }
 
-//first generate token to access api
+
     protected function generateToken()
     {
-        $response = $this->buildRequest('POST', '/api/auth/tokens', ['api_key' => $this->api_key]);
+        $response = $this->buildRequest('POST', '/api/auth/tokens', [
+            'username' =>'01097292131',
+            'password' => 'Zaynabmohamed1$',
+            'api_key' => $this->api_key
+        ]);
         return $response->getData(true)['data']['token'];
     }
 
-    public function sendPayment(Request $request):array
+    public function sendPayment($user,Request $request):array
     {
+        $order = $user->orders()->latest()->first();
         $this->header['Authorization'] = 'Bearer ' . $this->generateToken();
-        //validate data before sending it
+        
         $data = $request->all();
+        
+        
         $data['api_source'] = "INVOICE";
         $data['integrations'] = $this->integrations_id;
+        $data['amount_cents'] = ($order->final_price * 100);
+        $data['shipping_data']['first_name'] = $user->name;
+        $data['shipping_data']['email'] = $user->email;
+
 
         $response = $this->buildRequest('POST', '/api/ecommerce/orders', $data);
-        //handel payment response data and return it
+        
         if ($response->getData(true)['success']) {
 
 

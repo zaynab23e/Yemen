@@ -11,12 +11,9 @@ class PaymentServiceProvider extends ServiceProvider
     /**
      * Register services.
      */
-    public function register(): void {
-
-
+    public function register(): void
+    {
         $this->app->bind(PaymentGatewayInterface::class, PaymobPaymentService::class);
-
-
     }
 
     /**
