@@ -20,7 +20,7 @@ class UsersAuthController extends Controller
     // User login
     public function login(LoginUserRequest $request)
     {
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('phone', $request->phone)->first();
     
         // Check if user exists and verify password manually
         if (!$user || !Hash::check($request->password, $user->password)) {
