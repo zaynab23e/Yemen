@@ -44,8 +44,8 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     Route::post('/items/{item}', [ItemsController::class, 'update']);
     Route::delete('/items/{item}', [ItemsController::class, 'destroy']);
     
-    Route::post('items/{id}/', [ItemsController::class, 'updateItem'])->name('items.uploadImage');
     Route::get('/orders', [AdminOrderController::class, 'index'])->name('dashboard.orders');
+    Route::get('/orders/{id}', [AdminOrderController::class, 'show'])->name('dashboard.order');
 
     Route::post('/logout', [AdminsAuthController::class, 'logout'])->name('admins.logout');
 });

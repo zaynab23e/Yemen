@@ -21,4 +21,16 @@ class AdminOrderController extends Controller
             200
         );
     }
+    public function show($id)
+    {
+        $order = Order::with(['user', 'items'])->find($id); // Or use ->get() if you don’t want pagination
+        if (!$order) {
+            return response()->json([
+                'status' => 'Error has occurred...',
+                'message' => 'No Order Found',
+                'data' => null
+            ], 500);
+        }
+        return new OrderResource($order);
+    }    
 }

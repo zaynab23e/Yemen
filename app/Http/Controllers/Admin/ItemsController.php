@@ -45,20 +45,28 @@ class ItemsController extends Controller
             return response()->json([
                 'status' => 'Error has occurred...',
                 'message' => 'Item creation failed',
-                'data' => ''
+                'data' => null
             ], 500);
         }
 
         $item = new ItemResource($item);
         return response()->json([
-                'message' => 'item Updated Successfully',
+                'message' => 'item created Successfully',
                 'data' => $item            
         ]);
     }
 
 public function update(UpdateItemsRequest $request, $id)
 {
-    $item = Item::findOrFail($id);
+    $item = Item::find($id);
+        if (!$item)
+         {
+            return response()->json([
+            'status' => 'Error has occurred...',
+            'message' => 'No items Found',
+            'data' => null
+            ], 500);
+         } 
 
     if ($request->hasFile('image')) {
         $file = $request->file('image');
@@ -74,7 +82,7 @@ public function update(UpdateItemsRequest $request, $id)
         return response()->json([
                 'status' => 'Error has occurred...',
                 'message' => 'Item update failed',
-                'data' => ''
+                'data' => null
             ], 500);;
     }
 
@@ -88,15 +96,29 @@ public function update(UpdateItemsRequest $request, $id)
     public function destroy($id)
     {
         // Logic to delete a menu category
-        $item = Item::findOrFail($id);
+        $item = Item::find($id);
+        if (!$item) {
+            return response()->json([
+                'status' => 'Error has occurred...',
+                'message' => 'No items Found',
+                'data' => null
+            ], 500);
+        }        
         $item->delete();
 
         return $this->success('','item deleted successfully');
     }
     public function show($id)
     {
-        // Logic to display a single menu category
-        $item = Item::findOrFail($id);
+        $item = Item::find($id);
+        if (!$item) {
+            return response()->json([
+                'status' => 'Error has occurred...',
+                'message' => 'No items Found',
+                'data' => null
+            ], 500);
+        }
+
         return new ItemResource($item);
     }
 }
