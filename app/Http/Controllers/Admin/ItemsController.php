@@ -49,8 +49,11 @@ class ItemsController extends Controller
             ], 500);
         }
 
-
-        return new ItemResource($item);
+        $item = new ItemResource($item);
+        return response()->json([
+                'message' => 'item Updated Successfully',
+                'data' => $item            
+        ]);
     }
 
 public function update(UpdateItemsRequest $request, $id)
@@ -62,20 +65,24 @@ public function update(UpdateItemsRequest $request, $id)
         $filename = time() . '.' . $file->getClientOriginalExtension();
         $file->storeAs('public/items', $filename);
         $item->image = $filename;
-    } else {
-        $item->image = $request->old_image; // fallback to old image
+        $item->name = $request->name;
+        $item->description = $request->description;
+        $item->price = $request->price;
+        $item->menucategory_id = $request->category_id;
     }
-
-    $item->name = $request->name;
-    $item->description = $request->description;
-    $item->price = $request->price;
-    $item->menucategory_id = $request->category_id;
-
     if (!$item->save()) {
-        return redirect()->route('items.index')->with('error', 'Item update failed');
+        return response()->json([
+                'status' => 'Error has occurred...',
+                'message' => 'Item update failed',
+                'data' => ''
+            ], 500);;
     }
 
-    return new ItemResource($item);
+        $item = new ItemResource($item);
+        return response()->json([
+                'message' => 'item Updated Successfully',
+                'data' => $item            
+        ]);
 }
 
     public function destroy($id)

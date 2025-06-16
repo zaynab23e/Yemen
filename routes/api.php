@@ -30,8 +30,20 @@ Route::prefix('admin')->group(function () {
 
 });
 Route::middleware('admin')->prefix('admin')->group(function () {
-    Route::apiResource('/menuCategories', MenusCategoryController::class);
-    Route::apiResource('/items', ItemsController::class);
+    // Routes for MenuCategories
+    Route::get('/menuCategories', [MenusCategoryController::class, 'index']);
+    Route::post('/menuCategories', [MenusCategoryController::class, 'store']);
+    Route::get('/menuCategories/{menuCategory}', [MenusCategoryController::class, 'show']);
+    Route::post('/menuCategories/{menuCategory}', [MenusCategoryController::class, 'update']);
+    Route::delete('/menuCategories/{menuCategory}', [MenusCategoryController::class, 'destroy']);
+
+    // Routes for Items
+    Route::get('/items', [ItemsController::class, 'index']);
+    Route::post('/items', [ItemsController::class, 'store']);
+    Route::get('/items/{item}', [ItemsController::class, 'show']);
+    Route::post('/items/{item}', [ItemsController::class, 'update']);
+    Route::delete('/items/{item}', [ItemsController::class, 'destroy']);
+    
     Route::post('items/{id}/', [ItemsController::class, 'updateItem'])->name('items.uploadImage');
     Route::get('/orders', [AdminOrderController::class, 'index'])->name('dashboard.orders');
 
