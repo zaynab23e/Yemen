@@ -46,51 +46,80 @@ class ItemsController extends Controller
             return response()->json([
                 'status' => 'Error has occurred...',
                 'message' => 'Item creation failed',
-                'data' => ''
+                'data' => null
             ], 500);
         }
 
-
-        return new ItemResource($item);
+        $item = new ItemResource($item);
+        return response()->json([
+                'message' => 'item created Successfully',
+                'data' => $item            
+        ]);
     }
 
 public function update(UpdateItemsRequest $request, $id)
 {
-    $item = Item::findOrFail($id);
+    $item = Item::find($id);
+        if (!$item)
+         {
+            return response()->json([
+            'status' => 'Error has occurred...',
+            'message' => 'No items Found',
+            'data' => null
+            ], 500);
+         } 
 
     if ($request->hasFile('image')) {
         $file = $request->file('image');
         $filename = time() . '.' . $file->getClientOriginalExtension();
         $file->storeAs('public/items', $filename);
         $item->image = $filename;
-    } else {
-        $item->image = $request->old_image; // fallback to old image
+        $item->name = $request->name;
+        $item->description = $request->description;
+        $item->price = $request->price;
+        $item->menucategory_id = $request->category_id;
     }
-
-    $item->name = $request->name;
-    $item->description = $request->description;
-    $item->price = $request->price;
-    $item->menucategory_id = $request->category_id;
-
     if (!$item->save()) {
-        return redirect()->route('items.index')->with('error', 'Item update failed');
+        return response()->json([
+                'status' => 'Error has occurred...',
+                'message' => 'Item update failed',
+                'data' => null
+            ], 500);;
     }
 
-    return new ItemResource($item);
+        $item = new ItemResource($item);
+        return response()->json([
+                'message' => 'item Updated Successfully',
+                'data' => $item            
+        ]);
 }
 
     public function destroy($id)
     {
         // Logic to delete a menu category
-        $item = Item::findOrFail($id);
+        $item = Item::find($id);
+        if (!$item) {
+            return response()->json([
+                'status' => 'Error has occurred...',
+                'message' => 'No items Found',
+                'data' => null
+            ], 500);
+        }        
         $item->delete();
 
         return $this->success('','item deleted successfully');
     }
     public function show($id)
     {
-        // Logic to display a single menu category
-        $item = Item::findOrFail($id);
+        $item = Item::find($id);
+        if (!$item) {
+            return response()->json([
+                'status' => 'Error has occurred...',
+                'message' => 'No items Found',
+                'data' => null
+            ], 500);
+        }
+
         return new ItemResource($item);
     }
 }

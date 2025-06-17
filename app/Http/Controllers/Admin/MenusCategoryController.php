@@ -38,7 +38,21 @@ class MenusCategoryController extends Controller
         // Logic to update a menu category
 
         // Find the menu category and update it
-        $menuCategory = MenuCategory::findOrFail($id);
+        $menuCategory = MenuCategory::find($id);
+        if (!$menuCategory) {
+            return response()->json([
+                'status' => 'Error has occurred...',
+                'message' => 'No Category found',
+                'data' => null
+            ], 500);
+        }        
+        if (!$menuCategory) {
+            return response()->json([
+                'status' => 'Error has occurred...',
+                'message' => 'No Category found',
+                'data' => null
+            ], 500);
+        }         
         $menuCategory->update($request->validated());
 
         return new MenusCategoryResource($menuCategory);
@@ -46,7 +60,14 @@ class MenusCategoryController extends Controller
     public function destroy($id)
     {
         // Logic to delete a menu category
-        $menuCategory = MenuCategory::findOrFail($id);
+        $menuCategory = MenuCategory::find($id);
+        if (!$menuCategory) {
+            return response()->json([
+                'status' => 'Error has occurred...',
+                'message' => 'No Category found',
+                'data' => null
+            ], 500);
+        }        
         $menuCategory->delete();
 
         return $this->success('','Menu category deleted successfully.');
@@ -54,8 +75,14 @@ class MenusCategoryController extends Controller
     public function show($id)
     {
         // Logic to display a single menu category
-        $menuCategory = MenuCategory::findOrFail($id);
-        $admin = Auth::guard('admin')->user();
+        $menuCategory = MenuCategory::find($id);
+        if (!$menuCategory) {
+            return response()->json([
+                'status' => 'Error has occurred...',
+                'message' => 'No Category found',
+                'data' => null
+            ], 500);
+        }        
         return new MenusCategoryResource($menuCategory);
     }
 
