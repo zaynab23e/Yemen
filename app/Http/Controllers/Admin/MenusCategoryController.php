@@ -28,7 +28,24 @@ class MenusCategoryController extends Controller
     public function store(StoreMenusCategoryRequest $request)
     {
         // Store the menu category in the database
-        $category = MenuCategory::create($request->validated());
+       if ($request->hasFile('image')) {
+            $file = $request->file('image'); // You have an UploadedFile instance
+            $filename = time() . '.' . $file->getClientOriginalExtension();
+
+            $filename = $file->storeAs('public/categories', $filename);        
+            $category = MenuCategory::create([
+                'name' => $request->name,
+                'description' => $request->description,
+                'image' => $filename,
+            ]);
+            if (!$category) {
+                return response()->json([
+                    'status' => 'Error has occurred...',
+                    'message' => 'Cattegory created failed',
+                    'data' => ''
+                ], 500);
+            }            
+       }
 
         return new MenusCategoryResource($category);
     }
@@ -46,15 +63,17 @@ class MenusCategoryController extends Controller
                 'data' => null
             ], 500);
         }        
-        if (!$menuCategory) {
-            return response()->json([
-                'status' => 'Error has occurred...',
-                'message' => 'No Category found',
-                'data' => null
-            ], 500);
-        }         
-        $menuCategory->update($request->validated());
+       if ($request->hasFile('image')) {
+            $file = $request->file('image'); // You have an UploadedFile instance
+            $filename = time() . '.' . $file->getClientOriginalExtension();
 
+            $filename = $file->storeAs('public/categories', $filename);        
+            $menuCategory->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'image' => $filename,
+            ]);        
+        }
         return new MenusCategoryResource($menuCategory);
     }
     public function destroy($id)

@@ -19,6 +19,7 @@ class MenusCategoryResource extends JsonResource
             'attributes' =>[
                 'name' =>$this->name,
                 'description' =>$this->description,
+                'image' => $this->image
             ],
             'relationship' => [
                 'Items' => $this->items,

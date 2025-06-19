@@ -10,7 +10,7 @@ class MenuCategory extends Model
 {
     use HasFactory, SoftDeletes;
     protected $table = 'menucategories'; // Specify the table name if it differs from the model name
-    protected $fillable = ['name', 'description'];
+    protected $fillable = ['name', 'description','image'];
     public function items()
     {
         return $this->hasMany(Item::class, 'menucategory_id');
