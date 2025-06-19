@@ -23,6 +23,7 @@ class UpdateMenusCategoryRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255|unique:menuCategories,name,',
+            'image' => 'required|image|max:2048',
             'description' => 'nullable|string',
         ];
     }

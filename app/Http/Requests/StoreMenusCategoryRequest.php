@@ -23,6 +23,7 @@ class StoreMenusCategoryRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255|unique:menucategories,name',
+            'image' => 'required|image|max:2048',
             'description' => 'nullable|string',
         ];
     }
